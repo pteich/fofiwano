@@ -18,10 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main
+package cmd
 
-import "github.com/pteich/fofiwano/fofiwano/cmd"
+import (
+	"github.com/spf13/cobra"
 
-func main() {
-	cmd.Execute()
+	"github.com/pteich/fofiwano"
+
+	"log"
+	"github.com/spf13/viper"
+)
+
+// watchCmd represents the watch command
+var watchCmd = &cobra.Command{
+	Use:   "watch",
+	Short: "starts watching for filesystem changes",
+	Long: `Fofiwano is a CLI tool to watch folders or files for modifications like added, deleted or changed files.
+It then sends a notification to a specific endpoint, e.g. a Slack channel, an URI (HTTP-Request) or executes a command.
+`,
+	Run: func(cmd *cobra.Command, args []string) {
+
+		var watches []fofiwano.Watcher
+
+		if err := viper.UnmarshalKey("watching", &watches); err != nil {
+			log.Fatal(err)
+		}
+
+		fofiwano.Watch(watches)
+	},
+}
+
+func init() {
+	RootCmd.AddCommand(watchCmd)
 }
