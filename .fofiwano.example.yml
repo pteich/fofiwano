@@ -1,0 +1,19 @@
+
+# Example configuration
+watching:
+  - target: ./test/...
+    notifications:
+      - notify: slack
+        options:
+          channel: "#test"
+          user: fofiwano
+          webhook: https://...
+      - notify: http
+        options:
+          uri: http://www
+
+  - target: ./test2/...
+    notifications:
+      - notify: http
+        options:
+          uri: http://test.de
