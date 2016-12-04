@@ -2,16 +2,20 @@ package fofiwano
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	"strings"
+
 	"github.com/rjeczalik/notify"
 	"golang.org/x/net/context"
-	"os"
-	"syscall"
-	"os/signal"
 )
 
 // WatcherNotify defines a notification type for a watcher
 type WatcherNotify struct {
-	Notify string
+	Notify  string
+	Event   string
 	Options map[string]string
 }
 
@@ -19,7 +23,7 @@ type WatcherNotify struct {
 // Target can be a folder or a file, add /... to a folder for recursive watching
 // e.g. ./test/...
 type Watcher struct {
-	Target string
+	Target        string
 	Notifications []WatcherNotify
 }
 
@@ -41,12 +45,17 @@ func Watch(watches []Watcher) {
 
 	for _, watcher := range watches {
 
-		stopfunc := func (watcher Watcher) func() {
+		stopfunc := func(watcher Watcher) func() {
 			watcherEvents := make(chan notify.EventInfo, 2)
 			go func() {
 				for event := range watcherEvents {
-					// TODO implement notification
-					log.Printf("Got event: %+v | %s | %+v", event.Event(), event.Path(), watcher)
+					eventString := strings.ToLower(event.Event().String())
+					for _, notification := range watcher.Notifications {
+						if strings.ToLower(notification.Event) == "all" || strings.Contains(eventString, strings.ToLower(notification.Event)) {
+							// TODO implement real notification
+							log.Printf("Got event: %+v | %s | %+v", event.Event(), event.Path(), watcher)
+						}
+					}
 				}
 			}()
 
@@ -55,7 +64,7 @@ func Watch(watches []Watcher) {
 				log.Fatal(err)
 			}
 
-			return func () {
+			return func() {
 				log.Printf("Stopping watcher for %s\n", watcher.Target)
 				notify.Stop(watcherEvents)
 			}
