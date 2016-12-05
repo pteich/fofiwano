@@ -37,7 +37,7 @@ watching:
 
 - `target` can be a single file or a folder. Add `/...` to a folder to create a recursive watcher that also reacts to modifications in sub-folders.`
 - `notifications` is an array of notification providers with their options. *Right now only Slack notifications are available!* (more to come).
-- `event` can be one of `all`, `write`, `create` or `rename`
+- `event` can be one of `all`, `write`, `create`, `remove` or `rename`
 
 *Hint:* You don't have to stick with YAML if you don't like it. You can write your config in every format that [Viper](https://github.com/spf13/viper) supports (JSON, TOML, YAML, HCL, and Java properties config files).
 
