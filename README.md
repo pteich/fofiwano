@@ -61,3 +61,9 @@ fofiwano --help
 - add more notification providers (HTTP and command execution)
 - add templates for fine grained control over notification messages
 - add tests
+
+## Similar tools
+
+Tools with similar functionality:
+- https://github.com/splitbrain/Watcher
+- http://incron.aiken.cz/
