@@ -45,15 +45,21 @@ func Watch(watches []Watcher) {
 
 	for _, watcher := range watches {
 
-		stopfunc := func(watcher Watcher) func() {
+		stopfunc := func(specWatcher Watcher) func() {
 			watcherEvents := make(chan notify.EventInfo, 2)
 			go func() {
 				for event := range watcherEvents {
 					eventString := strings.ToLower(event.Event().String())
-					for _, notification := range watcher.Notifications {
+					for _, notification := range specWatcher.Notifications {
+						// TODO implement more notification providers
 						if strings.ToLower(notification.Event) == "all" || strings.Contains(eventString, strings.ToLower(notification.Event)) {
-							// TODO implement real notification
-							log.Printf("Got event: %+v | %s | %+v", event.Event(), event.Path(), watcher)
+							switch notification.Notify {
+							case "slack":
+								if err := NotifySlack(notification.Options, eventString, event.Path()); err != nil {
+									log.Println(err)
+								}
+
+							}
 						}
 					}
 				}
