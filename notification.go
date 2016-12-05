@@ -18,5 +18,6 @@ func NotifySlack(options interface{}, event string, path string) error {
 		return errors.New("Slack webhook missing")
 	}
 
+	// TODO add templates for better control over messages
 	return slackmsg.Send(event+" - "+path, slackstatus.ColorGood)
 }

@@ -1,3 +1,6 @@
 .idea
 .fofiwano.yml
 
+.goxc.json
+
+./fofiwano/bin/**
