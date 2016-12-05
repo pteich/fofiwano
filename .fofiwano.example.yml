@@ -4,19 +4,21 @@ watching:
   - target: ./test/...
     notifications:
       - notify: slack
-	event: all
+        event: all
         options:
           channel: "#test"
-          user: fofiwano
-          webhook: https://...
+          username: "fofiwano"
+          webhook_url: "https://hooks.slack.com/services/..."
+          icon_emoji: ":monkey_face:"
+          footer: "fofiwano"
       - notify: http
-	event: write
+        event: write
         options:
           uri: http://www
 
   - target: ./test2/...
     notifications:
       - notify: http
-	event: write
+        event: write
         options:
           uri: http://test.de
