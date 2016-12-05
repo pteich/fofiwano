@@ -37,6 +37,7 @@ watching:
 
 - `target` can be a single file or a folder. Add `/...` to a folder to create a recursive watcher that also reacts to modifications in sub-folders.`
 - `notifications` is an array of notification providers with their options. *Right now only Slack notifications are available!* (more to come).
+- `event` can be one of `all`, `write`, `create` or `rename`
 
 Start your watcher like so:
 ```bash
