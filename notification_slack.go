@@ -5,6 +5,7 @@ import (
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/pteich/slackstatus"
+	"log"
 )
 
 type Slack struct {
@@ -15,7 +16,11 @@ type Slack struct {
 func (slacknotifier *Slack) Notify(event string, path string) error {
 
 	// TODO add templates for better control over messages
-	return slacknotifier.Send(event+" - "+path, slackstatus.ColorGood)
+	err := slacknotifier.Send(event+" - "+path, slackstatus.ColorGood)
+	if err == nil {
+		log.Printf("Event %s for %s pushed to Slack channel %s\n", event, path, slacknotifier.Channel)
+	}
+	return err
 }
 
 func NewSlackNotification(options interface{}) (*Slack, error) {

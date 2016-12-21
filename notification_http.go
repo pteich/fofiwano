@@ -15,11 +15,15 @@ type HTTP struct {
 	Method     string `mapstructure:"method"`
 	ParamEvent string `mapstructure:"param_event"`
 	ParamPath  string `mapstructure:"param_path"`
-	httpClient *http.Client
 }
 
 // NotifyHTTP sends a file change notification to HTTP endpoint
 func (notifier *HTTP) Notify(event string, path string) error {
+
+	httpClient := timeouthttp.NewClient(timeouthttp.Config{
+		RequestTimeout: 5,
+		ConnectTimeout: 5,
+	})
 
 	req, err := http.NewRequest(notifier.Method, notifier.URI, nil)
 	if err != nil {
@@ -34,7 +38,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 		req.URL.RawQuery = q.Encode()
 	}
 
-	resp, err := notifier.httpClient.Do(req)
+	resp, err := httpClient.Do(req)
 	if resp == nil {
 		return errors.New("error reading response from " + req.URL.String())
 	}
@@ -44,7 +48,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 
 	defer resp.Body.Close()
 
-	log.Printf("Gepusht an %s\n", req.URL.String())
+	log.Printf("Event %s for %s pushed to %s\n", event, path, req.URL.String())
 
 	if body, err := ioutil.ReadAll(resp.Body); err == nil {
 		_ = body
@@ -60,11 +64,6 @@ func NewHTTPNotification(options interface{}) (*HTTP, error) {
 		ParamPath:  "path",
 		ParamEvent: "event",
 	}
-
-	httpNotifier.httpClient = timeouthttp.NewClient(timeouthttp.Config{
-		ConnectTimeout: 5,
-		RequestTimeout: 5,
-	})
 
 	if err := mapstructure.Decode(options, &httpNotifier); err != nil {
 		return nil, err
