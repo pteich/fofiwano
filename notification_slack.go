@@ -7,6 +7,7 @@ import (
 	"github.com/pteich/slackstatus"
 )
 
+// NotifySlack sends a file change notification to Slack
 func NotifySlack(options interface{}, event string, path string) error {
 
 	var slackmsg slackstatus.Message
