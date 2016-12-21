@@ -37,7 +37,7 @@ var RootCmd = &cobra.Command{
 	Use:   "fofiwano",
 	Short: "FoFiWaNo - Folder Files Watcher Notification",
 	Long: `Fofiwano is a CLI tool to watch folders or files for modifications like added, deleted or changed files.
-It then sends a notification to a specific endpoint, e.g. a Slack channel, an URI (HTTP-Request) or executes a command.
+It then sends a notification to a specific endpoint, e.g. a Slack channel, an URL (HTTP-Request) or executes a command.
 `,
 }
 

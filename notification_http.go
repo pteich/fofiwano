@@ -11,7 +11,7 @@ import (
 )
 
 type HTTP struct {
-	URI        string `mapstructure:"uri"`
+	URL        string `mapstructure:"url"`
 	Method     string `mapstructure:"method"`
 	ParamEvent string `mapstructure:"param_event"`
 	ParamPath  string `mapstructure:"param_path"`
@@ -25,7 +25,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 		ConnectTimeout: 5,
 	})
 
-	req, err := http.NewRequest(notifier.Method, notifier.URI, nil)
+	req, err := http.NewRequest(notifier.Method, notifier.URL, nil)
 	if err != nil {
 		return err
 	}
@@ -69,8 +69,8 @@ func NewHTTPNotification(options interface{}) (*HTTP, error) {
 		return nil, err
 	}
 
-	if httpNotifier.URI == "" {
-		return nil, errors.New("HTTP URI missing")
+	if httpNotifier.URL == "" {
+		return nil, errors.New("HTTP URL missing")
 	}
 
 	return httpNotifier, nil

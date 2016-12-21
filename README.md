@@ -1,6 +1,6 @@
 # Watcher and Notifications for File and Folder changes
 
-A small CLI tool that watches folders or files for modifications like added, changed or deleted files. It then sends a notification to a specific endpoint, e.g. a Slack channel, an URI (HTTP request) or execute a command. 
+A small CLI tool that watches folders or files for modifications like added, changed or deleted files. It then sends a notification to a specific endpoint, e.g. a Slack channel, an URL (HTTP request) or execute a command. 
 
 It makes use of the [github.com/rjeczalik/notify Go library](https://github.com/rjeczalik/notify) to provide cross-platform filesystem notifications.
 
@@ -23,7 +23,7 @@ watching:
       - notify: http
         event: write
         options:
-          uri: http://my.endpoint.com
+          URL: http://my.endpoint.com
 
   # only watching ./test2 and NO sub-folders
   - target: ./test2
@@ -31,7 +31,7 @@ watching:
       - notify: http
         event: write
         options:
-          uri: http://test.com
+          URL: http://test.com
 
 ```
 
@@ -71,13 +71,13 @@ Available options:
 
 Available options:
 ```yaml
-          uri: "http://my.endpoint.com"
+          URL: "http://my.endpoint.com"
           method: "GET" # currently only GET
           param_event: "event" # parameter name for event
           param_path: "param" # parameter name for path
 ```
 
-Currently only GET is supported. The given URI will be called with the given paramter names like so:
+Currently only GET is supported. The given URL will be called with the given paramter names like so:
 `http://my.endpoint.com?event=notify.rename&path=/home/myname/files/test.txt`
 
 ## TODO:

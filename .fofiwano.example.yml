@@ -14,11 +14,11 @@ watching:
       - notify: http
         event: write
         options:
-          uri: http://www
+          url: http://www
 
   - target: ./test2/...
     notifications:
       - notify: http
         event: write
         options:
-          uri: http://test.de
+          url: http://test.de
