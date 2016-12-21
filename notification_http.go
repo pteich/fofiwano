@@ -10,49 +10,31 @@ import (
 	"github.com/pteich/go-timeout-httpclient"
 )
 
-type NotifyHTTPOptions struct {
+type HTTP struct {
 	URI        string `mapstructure:"uri"`
 	Method     string `mapstructure:"method"`
 	ParamEvent string `mapstructure:"param_event"`
 	ParamPath  string `mapstructure:"param_path"`
+	httpClient *http.Client
 }
 
 // NotifyHTTP sends a file change notification to HTTP endpoint
-func NotifyHTTP(options interface{}, event string, path string) error {
+func (notifier *HTTP) Notify(event string, path string) error {
 
-	httpClient := timeouthttp.NewClient(timeouthttp.Config{
-		ConnectTimeout: 5,
-		RequestTimeout: 5,
-	})
-
-	httpOptions := NotifyHTTPOptions{
-		Method:     "GET",
-		ParamPath:  "path",
-		ParamEvent: "event",
-	}
-
-	if err := mapstructure.Decode(options, &httpOptions); err != nil {
-		return err
-	}
-
-	if httpOptions.URI == "" {
-		return errors.New("HTTP URI missing")
-	}
-
-	req, err := http.NewRequest(httpOptions.Method, httpOptions.URI, nil)
+	req, err := http.NewRequest(notifier.Method, notifier.URI, nil)
 	if err != nil {
 		return err
 	}
 
-	if httpOptions.Method == "GET" {
+	if notifier.Method == "GET" {
 		q := req.URL.Query()
-		q.Add(httpOptions.ParamEvent, event)
-		q.Add(httpOptions.ParamPath, path)
+		q.Add(notifier.ParamEvent, event)
+		q.Add(notifier.ParamPath, path)
 
 		req.URL.RawQuery = q.Encode()
 	}
 
-	resp, err := httpClient.Do(req)
+	resp, err := notifier.httpClient.Do(req)
 	if resp == nil {
 		return errors.New("error reading response from " + req.URL.String())
 	}
@@ -69,4 +51,28 @@ func NotifyHTTP(options interface{}, event string, path string) error {
 	}
 
 	return nil
+}
+
+func NewHTTPNotification(options interface{}) (*HTTP, error) {
+
+	httpNotifier := &HTTP{
+		Method:     "GET",
+		ParamPath:  "path",
+		ParamEvent: "event",
+	}
+
+	httpNotifier.httpClient = timeouthttp.NewClient(timeouthttp.Config{
+		ConnectTimeout: 5,
+		RequestTimeout: 5,
+	})
+
+	if err := mapstructure.Decode(options, &httpNotifier); err != nil {
+		return nil, err
+	}
+
+	if httpNotifier.URI == "" {
+		return nil, errors.New("HTTP URI missing")
+	}
+
+	return httpNotifier, nil
 }
