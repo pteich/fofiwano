@@ -23,7 +23,7 @@ watching:
       - notify: http
         event: write
         options:
-          uri: http://www
+          uri: http://my.endpoint.com
 
   # only watching ./test2 and NO sub-folders
   - target: ./test2
@@ -31,7 +31,7 @@ watching:
       - notify: http
         event: write
         options:
-          uri: http://test.de
+          uri: http://test.com
 
 ```
 
@@ -58,7 +58,7 @@ fofiwano --help
 
 ## TODO:
 
-- add more notification providers (HTTP and command execution)
+- add more notification providers (command execution)
 - add templates for fine grained control over notification messages
 - add queue for notification events to prevent locks
 - add tests
