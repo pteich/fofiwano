@@ -49,10 +49,11 @@ func Watch(watches []Watcher) {
 		stopfunc := func(specWatcher Watcher) func() {
 			watcherEvents := make(chan notify.EventInfo, 2)
 
-			// setup all notifiers
+			// setup all notifiers and save them for re-use on events
 			var notifier Notifcation
 			var err error
 			for i := 0; i < len(specWatcher.Notifications); i++ {
+				// TODO implement more notification providers
 				switch specWatcher.Notifications[i].Notify {
 				case "slack":
 					notifier, err = NewSlackNotification(specWatcher.Notifications[i].Options)
@@ -70,8 +71,8 @@ func Watch(watches []Watcher) {
 			go func() {
 				for event := range watcherEvents {
 					eventString := strings.ToLower(event.Event().String())
+					// loop over notifications and call Notify function of specific notifier
 					for _, notification := range specWatcher.Notifications {
-						// TODO implement more notification providers
 						if strings.ToLower(notification.Event) == "all" || strings.Contains(eventString, strings.ToLower(notification.Event)) {
 							if err := notification.Notifier.Notify(eventString, event.Path()); err != nil {
 								log.Println(err)
