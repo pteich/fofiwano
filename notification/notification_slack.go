@@ -1,4 +1,4 @@
-package fofiwano
+package notification
 
 import (
 	"errors"
@@ -23,7 +23,7 @@ func (slacknotifier *Slack) Notify(event string, path string) error {
 	return err
 }
 
-func NewSlackNotification(options interface{}) (*Slack, error) {
+func NewSlackNotification(options Options) (*Slack, error) {
 
 	slacknotifier := new(Slack)
 

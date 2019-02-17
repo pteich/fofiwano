@@ -8,6 +8,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/pteich/fofiwano/notification"
+
 	"github.com/rjeczalik/notify"
 )
 
@@ -15,8 +17,8 @@ import (
 type WatcherNotify struct {
 	Notify   string
 	Event    string
-	Options  map[string]string
-	Notifier Notifcation
+	Options  notification.Options
+	Notifier notification.Notification
 }
 
 // Watcher defines a watcher configuration
@@ -49,15 +51,15 @@ func Watch(watches []Watcher) {
 			watcherEvents := make(chan notify.EventInfo, 2)
 
 			// setup all notifiers and save them for re-use on events
-			var notifier Notifcation
+			var notifier notification.Notification
 			var err error
 			for i := 0; i < len(specWatcher.Notifications); i++ {
 				// TODO implement more notification providers
 				switch specWatcher.Notifications[i].Notify {
 				case "slack":
-					notifier, err = NewSlackNotification(specWatcher.Notifications[i].Options)
+					notifier, err = notification.NewSlackNotification(specWatcher.Notifications[i].Options)
 				case "http":
-					notifier, err = NewHTTPNotification(specWatcher.Notifications[i].Options)
+					notifier, err = notification.NewHTTPNotification(specWatcher.Notifications[i].Options)
 				}
 
 				if err != nil {

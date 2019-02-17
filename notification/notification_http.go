@@ -1,4 +1,4 @@
-package fofiwano
+package notification
 
 import (
 	"bytes"
@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/mitchellh/mapstructure"
 	"github.com/pkg/errors"
@@ -34,6 +35,17 @@ func (notifier *HTTP) Notify(event string, path string) error {
 
 	body := &bytes.Buffer{}
 
+	if notifier.Method == http.MethodPost {
+		payload := HTTPPaylod{
+			Event: event,
+			Path:  path,
+		}
+		err := json.NewEncoder(body).Encode(payload)
+		if err != nil {
+			return err
+		}
+	}
+
 	req, err := http.NewRequest(notifier.Method, notifier.URL, body)
 	if err != nil {
 		return err
@@ -43,19 +55,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 		q := req.URL.Query()
 		q.Add(notifier.ParamEvent, event)
 		q.Add(notifier.ParamPath, path)
-
 		req.URL.RawQuery = q.Encode()
-	} else if notifier.Method == http.MethodPost {
-		payload := HTTPPaylod{
-			Event: event,
-			Path:  path,
-		}
-		err = json.NewEncoder(body).Encode(payload)
-		if err != nil {
-			return err
-		}
-	} else {
-		return errors.Errorf("method %s not implemented", notifier.Method)
 	}
 
 	resp, err := httpClient.Do(req)
@@ -77,7 +77,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 	return nil
 }
 
-func NewHTTPNotification(options interface{}) (*HTTP, error) {
+func NewHTTPNotification(options Options) (*HTTP, error) {
 
 	httpNotifier := &HTTP{
 		Method:     http.MethodGet,
@@ -92,6 +92,8 @@ func NewHTTPNotification(options interface{}) (*HTTP, error) {
 	if httpNotifier.URL == "" {
 		return nil, errors.New("HTTP URL missing")
 	}
+
+	httpNotifier.Method = strings.ToUpper(httpNotifier.Method)
 
 	return httpNotifier, nil
 }
