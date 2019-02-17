@@ -1,15 +1,14 @@
 package fofiwano
 
 import (
+	"context"
 	"log"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 
-	"strings"
-
 	"github.com/rjeczalik/notify"
-	"golang.org/x/net/context"
 )
 
 // WatcherNotify defines a notification type for a watcher
