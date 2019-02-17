@@ -1,12 +1,14 @@
 package fofiwano
 
 import (
-	"errors"
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/mitchellh/mapstructure"
+	"github.com/pkg/errors"
 	"github.com/pteich/go-timeout-httpclient"
 )
 
@@ -17,6 +19,11 @@ type HTTP struct {
 	ParamPath  string `mapstructure:"param_path"`
 }
 
+type HTTPPaylod struct {
+	Event string `json:"event"`
+	Path  string `json:"path"`
+}
+
 // NotifyHTTP sends a file change notification to HTTP endpoint
 func (notifier *HTTP) Notify(event string, path string) error {
 
@@ -25,17 +32,30 @@ func (notifier *HTTP) Notify(event string, path string) error {
 		ConnectTimeout: 5,
 	})
 
-	req, err := http.NewRequest(notifier.Method, notifier.URL, nil)
+	body := &bytes.Buffer{}
+
+	req, err := http.NewRequest(notifier.Method, notifier.URL, body)
 	if err != nil {
 		return err
 	}
 
-	if notifier.Method == "GET" {
+	if notifier.Method == http.MethodGet {
 		q := req.URL.Query()
 		q.Add(notifier.ParamEvent, event)
 		q.Add(notifier.ParamPath, path)
 
 		req.URL.RawQuery = q.Encode()
+	} else if notifier.Method == http.MethodPost {
+		payload := HTTPPaylod{
+			Event: event,
+			Path:  path,
+		}
+		err = json.NewEncoder(body).Encode(payload)
+		if err != nil {
+			return err
+		}
+	} else {
+		return errors.Errorf("method %s not implemented", notifier.Method)
 	}
 
 	resp, err := httpClient.Do(req)
@@ -60,7 +80,7 @@ func (notifier *HTTP) Notify(event string, path string) error {
 func NewHTTPNotification(options interface{}) (*HTTP, error) {
 
 	httpNotifier := &HTTP{
-		Method:     "GET",
+		Method:     http.MethodGet,
 		ParamPath:  "path",
 		ParamEvent: "event",
 	}
