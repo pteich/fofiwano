@@ -72,13 +72,22 @@ Available options:
 Available options:
 ```yaml
           URL: "http://my.endpoint.com"
-          method: "GET" # currently only GET
+          method: "GET" # GET or POST
           param_event: "event" # parameter name for event
           param_path: "param" # parameter name for path
 ```
 
-Currently only GET is supported. The given URL will be called with the given paramter names like so:
+GET and POST is supported. 
+For GET the given URL will be called with the following paramter names:
 `http://my.endpoint.com?event=notify.rename&path=/home/myname/files/test.txt`
+
+For POST endpoints a JSON with the following content is sent as body:
+````json
+{
+  "event": "notify.rename",
+  "path": "/home/myname/files/test.txt"
+}
+````
 
 ## TODO:
 
